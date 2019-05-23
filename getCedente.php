@@ -1,88 +1,120 @@
 <?php
 	include_once 'conexao.php';
 	
-	$id = $_POST['id'];
+   $cnpj = $_POST['cnpj'];
+   $senha = $_POST['senha'];
 
-	$sql1 = $dbcon -> query("SELECT * FROM `cedentes` WHERE id = '$id' LIMIT 1");
+	$sql1 = $dbcon -> query("SELECT ce.`id` as 'id-cedente', ce.`nome` as 'nome-cedente', ce.`uso-banco`, ce.`use-santander`, ce.`endereco`, ce.`praca`, ce.`cnpj`, ce.`informacoes`, co.`id` as 'id-conta', co.`banco`, co.`cip`, co.`conta`, co.`convenio`, co.`modalidade`, co.`agencia`  FROM `cedentes` ce INNER JOIN `contas` co ON co.`cedente-id` = ce.`id` AND ce.`cnpj` = $cnpj AND ce.`senha` = $senha ");
 
 	if(mysqli_num_rows($sql1) > 0){
-        $dados = $sql1->fetch_array();
+      $dados = $sql1->fetch_array();
 
 		echo "{";
 
-		echo "\"CedenteCod\":\"";
-		echo $dados['cedente-cod'];
+		echo "\"id\":\"";
+		echo $dados['id-cedente'];
 		echo "\",";
 
-		echo "\"Cedente\":\"";
-		echo $dados['nome'];
+		echo "\"nome\":\"";
+		echo $dados['nome-cedente'];
 		echo "\",";
 
-		echo "\"Banco\":\"";
-		echo $dados['banco'];
-		echo "\",";
-
-		echo "\"Agencia\":\"";
-		echo $dados['agencia'];
-		echo "\",";
-
-		echo "\"Conta\":\"";
-		echo $dados['conta'];
-		echo "\",";
-
-		echo "\"Carteira\":\"";
-		echo $dados['carteira'];
-		echo "\",";
-
-		echo "\"CarteiraTipo\":\"";
-		echo $dados['carteira-tipo'];
-		echo "\",";
-
-		echo "\"Modalidade\":\"";
-		echo $dados['modalidade'];
-		echo "\",";
-
-		echo "\"Convenio\":\"";
-		echo $dados['convenio'];
-		echo "\",";
-
-		echo "\"CodCedente\":\"";
-		echo $dados['cod-cedente'];
-		echo "\",";
-
-		echo "\"UsoBanco\":\"";
+		echo "\"usobanco\":\"";
 		echo $dados['uso-banco'];
 		echo "\",";
 
-		echo "\"Cip\":\"";
-		echo $dados['cip'];
+		echo "\"useSantander\":\"";
+		echo $dados['use-santander'];
 		echo "\",";
 
-		echo "\"UseSantander\":";
-		echo $dados['use-santander'];
-		echo ",";
-
-		echo "\"Endereco\":\"";
+		echo "\"endereco\":\"";
 		echo $dados['endereco'];
 		echo "\",";
 
-		echo "\"Praca\":\"";
+		echo "\"praca\":\"";
 		echo $dados['praca'];
 		echo "\",";
 
-		echo "\"Cnpj\":\"";
+		echo "\"cnpj\":\"";
 		echo $dados['cnpj'];
 		echo "\",";
 
-		echo "\"Informacoes\":\"";
+		echo "\"informacoes\":\"";
 		echo $dados['informacoes'];
-		echo "\",";
-		
+      echo "\",";
+      
+      echo "\"contas\":[";
+      
+      echo "{";
+
+      echo "\"id\":\"";
+      echo $dados['id-conta'];
+      echo "\","; 
+
+      echo "\"banco\":\"";
+      echo $dados['banco'];
+      echo "\",";
+
+      echo "\"cip\":\"";
+      echo $dados['cip'];
+      echo "\",";
+
+      echo "\"conta\":\"";
+      echo $dados['conta'];
+      echo "\",";
+
+      echo "\"convenio\":\"";
+      echo $dados['convenio'];
+      echo "\",";
+
+      echo "\"modalidade\":\"";
+      echo $dados['modalidade'];
+      echo "\",";
+
+      echo "\"agencia\":\"";
+      echo $dados['agencia'];
+      echo "\",";
+
+      echo "},";
+
+		while($dados = $sql1->fetch_array()){
+			echo "{";
+
+         echo "\"id\":\"";
+         echo $dados['id-conta'];
+         echo "\","; 
+
+         echo "\"banco\":\"";
+         echo $dados['banco'];
+         echo "\",";
+
+         echo "\"cip\":\"";
+         echo $dados['cip'];
+         echo "\",";
+
+         echo "\"conta\":\"";
+         echo $dados['conta'];
+         echo "\",";
+
+         echo "\"convenio\":\"";
+         echo $dados['convenio'];
+         echo "\",";
+
+         echo "\"modalidade\":\"";
+         echo $dados['modalidade'];
+         echo "\",";
+
+         echo "\"agencia\":\"";
+         echo $dados['agencia'];
+         echo "\",";
+
+			echo "},";
+		}
+
+		echo "]";
+
 		echo "}";
-		/*while($dados = $sql1->fetch_array()){
-			echo $dados['nome'];
-		}*/
 	}else{
 		echo "erro";
-	}
+   }
 ?>
