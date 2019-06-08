@@ -2,8 +2,9 @@
 	include_once 'conexao.php';
 	
    $cedente_id = $_POST['cedente-id'];
+   $is_boleto = $_POST['is-boleto'];
 
-	$sql1 = $dbcon -> query("SELECT me.`id` as 'id-medicoes', me.`data-medicao`, me.`boleto-gerado`, me.`medicao`, medidor.`id` as 'id-medidor', medidor.`nome` as 'nome-medidor', medidor.`cpf`, sa.`id` as 'id-sacado', sa.`nome` as 'nome-sacado', sa.`email`, sa.`documento`, sa.`avalista`, sa.`avalista-documento`, ca.`id` as 'id-casa', ca.`bairro`, ca.`cidade`, ca.`dia-vencimento`, ca.`cidade`, ca.`num-hidrometro`, ca.`numero`, ca.`rua`, ca.`UF`, ca.`cep` FROM `medicoes` me INNER JOIN `medidor` ON me.`medidor-id` = medidor.`id` INNER JOIN `casas` ca ON me.`casa-id` = ca.`id` AND ca.`cedente-id` = $cedente_id INNER JOIN `sacado` sa ON ca.`sacado-id` = sa.`id` ");
+	$sql1 = $dbcon -> query("SELECT me.`id` as 'id-medicoes', me.`data-medicao`, me.`boleto-gerado`, me.`data-boleto-gerado`, me.`medicao`, me.`medicao-anterior`, me.`carteira-selecionada`, me.`conta-selecionada-index`, medidor.`id` as 'id-medidor', medidor.`nome` as 'nome-medidor', medidor.`cpf`, sa.`id` as 'id-sacado', sa.`nome` as 'nome-sacado', sa.`email`, sa.`documento`, sa.`avalista`, sa.`avalista-documento`, ca.`id` as 'id-casa', ca.`bairro`, ca.`cidade`, ca.`dia-vencimento`, ca.`cidade`, ca.`referencia`, ca.`num-hidrometro`, ca.`numero`, ca.`rua`, ca.`UF`, ca.`cep` FROM `medicoes` me INNER JOIN `medidor` ON me.`medidor-id` = medidor.`id` AND me.`boleto-gerado` = $is_boleto  AND 0 = (SELECT COUNT(*) FROM `medicoes-remessa` WHERE `medicoes-remessa`.`medicoes-id` = me.`id`) INNER JOIN `casas` ca ON me.`casa-id` = ca.`id` AND ca.`cedente-id` = $cedente_id INNER JOIN `sacado` sa ON ca.`sacado-id` = sa.`id` ");
 
 	if(mysqli_num_rows($sql1) > 0){
         echo "[";
@@ -25,6 +26,22 @@
             
             echo "\"medicao\":\"";
             echo $dados['medicao'];
+            echo "\",";
+
+            echo "\"medicaoAnterior\":\"";
+            echo $dados['medicao-anterior'];
+            echo "\",";
+
+            echo "\"dataBoletoGerado\":\"";
+            echo $dados['data-boleto-gerado'];
+            echo "\",";
+
+            echo "\"carteiraSelecionada\":\"";
+            echo $dados['carteira-selecionada'];
+            echo "\",";
+
+            echo "\"contaSelecionadaIndex\":\"";
+            echo $dados['conta-selecionada-index'];
             echo "\",";
 
             echo "\"medidor\":{"; // abrindo medidor
@@ -107,6 +124,10 @@
 
             echo "\"cep\":\"";
             echo $dados['cep'];
+            echo "\",";
+
+            echo "\"referencia\":\"";
+            echo $dados['referencia'];
             echo "\"";
 
             echo "}"; //fechando casa

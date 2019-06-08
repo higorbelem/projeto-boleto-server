@@ -4,7 +4,7 @@
    $cnpj = $_POST['cnpj'];
    $senha = $_POST['senha'];
 
-	$sql1 = $dbcon -> query("SELECT ce.`id` as 'id-cedente', ce.`nome` as 'nome-cedente', ce.`uso-banco`, ce.`use-santander`, ce.`endereco`, ce.`praca`, ce.`cnpj`, ce.`informacoes`, co.`id` as 'id-conta', co.`banco`, co.`cip`, co.`conta`, co.`convenio`, co.`modalidade`, co.`agencia`  FROM `cedentes` ce INNER JOIN `contas` co ON co.`cedente-id` = ce.`id` AND ce.`cnpj` = $cnpj AND ce.`senha` = $senha ");
+	$sql1 = $dbcon -> query("SELECT ce.`id` as 'id-cedente', ce.`nome` as 'nome-cedente', ce.`uso-banco`, ce.`use-santander`, ce.`uf`, ce.`cidade`, ce.`bairro`, ce.`rua`, ce.`numero`, ce.`cep`, ce.`cnpj`, ce.`informacoes`, ce.`contato`, ce.`valor-por-metro-cubico`, ce.`esgoto`, co.`id` as 'id-conta', co.`banco`, co.`cip`, co.`conta`, co.`convenio`, co.`modalidade`, co.`agencia`  FROM `cedentes` ce INNER JOIN `contas` co ON co.`cedente-id` = ce.`id` AND ce.`cnpj` = $cnpj AND ce.`senha` = $senha ");
 
 	if(mysqli_num_rows($sql1) > 0){
       $dados = $sql1->fetch_array();
@@ -27,14 +27,6 @@
 		echo $dados['use-santander'];
 		echo "\",";
 
-		echo "\"endereco\":\"";
-		echo $dados['endereco'];
-		echo "\",";
-
-		echo "\"praca\":\"";
-		echo $dados['praca'];
-		echo "\",";
-
 		echo "\"cnpj\":\"";
 		echo $dados['cnpj'];
 		echo "\",";
@@ -42,7 +34,43 @@
 		echo "\"informacoes\":\"";
 		echo $dados['informacoes'];
       echo "\",";
+
+      echo "\"contato\":\"";
+		echo $dados['contato'];
+      echo "\",";
+
+      echo "\"uf\":\"";
+		echo $dados['uf'];
+      echo "\",";
+
+      echo "\"cidade\":\"";
+		echo $dados['cidade'];
+      echo "\",";
+
+      echo "\"bairro\":\"";
+		echo $dados['bairro'];
+      echo "\",";
+
+      echo "\"rua\":\"";
+		echo $dados['rua'];
+      echo "\",";
+
+      echo "\"numero\":\"";
+		echo $dados['numero'];
+      echo "\",";
+
+      echo "\"cep\":\"";
+		echo $dados['cep'];
+      echo "\",";
+
+      echo "\"valorPorMetroCubico\":\"";
+		echo $dados['valor-por-metro-cubico'];
+      echo "\",";
       
+      echo "\"esgoto\":\"";
+		echo $dados['esgoto'];
+      echo "\",";
+
       echo "\"contas\":[";
       
       echo "{";
@@ -115,6 +143,6 @@
 
 		echo "}";
 	}else{
-		echo "erro";
+		echo "erro-login";
    }
 ?>
