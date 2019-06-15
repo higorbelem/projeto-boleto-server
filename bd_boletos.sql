@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: 08-Jun-2019 às 02:43
+-- Generation Time: 15-Jun-2019 às 22:27
 -- Versão do servidor: 5.7.26
 -- versão do PHP: 7.2.18
 
@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS `cedentes` (
   `cep` varchar(15) NOT NULL,
   `valor-por-metro-cubico` double NOT NULL,
   `esgoto` float NOT NULL,
+  `email` varchar(70) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
@@ -85,8 +86,8 @@ CREATE TABLE IF NOT EXISTS `cedentes` (
 -- Extraindo dados da tabela `cedentes`
 --
 
-INSERT INTO `cedentes` (`id`, `senha`, `nome`, `uso-banco`, `use-santander`, `cnpj`, `informacoes`, `contato`, `UF`, `cidade`, `bairro`, `rua`, `numero`, `cep`, `valor-por-metro-cubico`, `esgoto`) VALUES
-(7, '123', 'Cedente 1', '123', 1, '123', 'adada', '0800 400 2135', 'BA', 'Itabuna', 'Centro', 'Adolfo Maron', '256', '45607-256', 3.5, 45);
+INSERT INTO `cedentes` (`id`, `senha`, `nome`, `uso-banco`, `use-santander`, `cnpj`, `informacoes`, `contato`, `UF`, `cidade`, `bairro`, `rua`, `numero`, `cep`, `valor-por-metro-cubico`, `esgoto`, `email`) VALUES
+(7, '123', 'Cedente 1', '123', 1, '123', 'adada', '0800 400 2135', 'BA', 'Itabuna', 'Centro', 'Adolfo Maron', '256', '45607-256', 3.5, 45, 'higorbelemdeoliveira@hotmail.com');
 
 -- --------------------------------------------------------
 
@@ -147,12 +148,12 @@ CREATE TABLE IF NOT EXISTS `medicoes` (
 --
 
 INSERT INTO `medicoes` (`id`, `casa-id`, `medidor-id`, `data-medicao`, `medicao`, `medicao-anterior`, `boleto-gerado`, `data-boleto-gerado`, `carteira-selecionada`, `conta-selecionada-index`) VALUES
-(1, 2, 1, '2019-05-28 07:00:00', 43, 37, 1, '2019-06-07 23:41:20', '16', 3),
-(2, 2, 1, '2019-04-28 07:00:00', 37, 30, 1, '2019-06-07 23:41:20', '16', 3),
-(3, 2, 1, '2019-03-28 07:00:00', 30, 21, 1, '2019-06-07 23:41:20', '16', 3),
-(4, 2, 1, '2019-02-28 07:00:00', 21, 16, 1, '2019-06-07 23:41:20', '16', 3),
-(5, 2, 1, '2019-01-28 07:00:00', 16, 7, 1, '2019-06-07 23:41:20', '16', 3),
-(6, 2, 1, '2018-12-28 07:00:00', 7, 0, 1, '2019-06-07 23:41:20', '16', 3);
+(1, 2, 1, '2019-05-28 07:00:00', 43, 37, 1, '2019-06-15 18:53:08', '16', 3),
+(2, 2, 1, '2019-04-28 07:00:00', 37, 30, 1, '2019-06-15 18:53:08', '16', 3),
+(3, 2, 1, '2019-03-28 07:00:00', 30, 21, 1, '2019-06-15 18:53:08', '16', 3),
+(4, 2, 1, '2019-02-28 07:00:00', 21, 16, 1, '2019-06-15 18:53:08', '16', 3),
+(5, 2, 1, '2019-01-28 07:00:00', 16, 7, 1, '2019-06-15 18:53:08', '16', 3),
+(6, 2, 1, '2018-12-28 07:00:00', 7, 0, 1, '2019-06-15 18:53:08', '16', 3);
 
 -- --------------------------------------------------------
 
@@ -168,19 +169,19 @@ CREATE TABLE IF NOT EXISTS `medicoes-remessa` (
   PRIMARY KEY (`id`),
   KEY `medicoes-id` (`medicoes-id`),
   KEY `remessa-id` (`remessa-id`)
-) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=86 DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `medicoes-remessa`
 --
 
 INSERT INTO `medicoes-remessa` (`id`, `medicoes-id`, `remessa-id`) VALUES
-(36, 6, 21),
-(35, 5, 21),
-(34, 4, 21),
-(33, 3, 21),
-(32, 2, 21),
-(31, 1, 21);
+(85, 6, 39),
+(84, 5, 39),
+(83, 4, 39),
+(82, 3, 39),
+(81, 2, 39),
+(80, 1, 39);
 
 -- --------------------------------------------------------
 
@@ -220,15 +221,16 @@ CREATE TABLE IF NOT EXISTS `remessa` (
   `arquivo-remessa` text NOT NULL,
   `arquivo-retorno` text NOT NULL,
   `enviado` tinyint(1) NOT NULL,
+  `data-envio` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=40 DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `remessa`
 --
 
-INSERT INTO `remessa` (`id`, `data`, `arquivo-remessa`, `arquivo-retorno`, `enviado`) VALUES
-(21, '2019-06-07 23:41:26', '01REMESSA01COBRANCA       12341123456781000000CEDENTE 1                     001BANCODOBRASIL  1906070000055                      0123123                                                                                                                                                                                                                                                                  000001\r\n701000000000001231234112345678101231235                        123123123123119060000       1230000000     160111906     21061900000000030450010000 05N280519000000000000000000000000000000000000000000000000000000000000000100000000000123SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000002\r\n701000000000001231234112345678101231235                        123123123123219060000       1230000000     160121906     21051900000000035530010000 05N280419000000000000000000000000000000000000000000000000000000000000000100000000000123SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000003\r\n701000000000001231234112345678101231235                        123123123123319060000       1230000000     160131906     21041900000000045680010000 05N280319000000000000000000000000000000000000000000000000000000000000000100000000000123SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000004\r\n701000000000001231234112345678101231235                        123123123123419060000       1230000000     160141906     21031900000000025380010000 05N280219000000000000000000000000000000000000000000000000000000000000000100000000000123SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000005\r\n701000000000001231234112345678101231235                        123123123123519060000       1230000000     160151906     21021900000000045680010000 05N280119000000000000000000000000000000000000000000000000000000000000000100000000000123SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000006\r\n701000000000001231234112345678101231235                        123123123123619060000       1230000000     160161906     21011800000000035530010000 05N281218000000000000000000000000000000000000000000000000000000000000000100000000000123SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000007\r\n9                                                                                                                                                                                                                                                                                                                                                                                                         000008\r\n', '', 0);
+INSERT INTO `remessa` (`id`, `data`, `arquivo-remessa`, `arquivo-retorno`, `enviado`, `data-envio`) VALUES
+(39, '2019-06-15 19:20:24', '01REMESSA01COBRANCA       12341123456781000000CEDENTE 1                     001BANCODOBRASIL  1906150000055                      0123123                                                                                                                                                                                                                                                                  000001\r\n701000000000001231234112345678101231235                        123123123123119060000       1230000000     160111906     21061900000000030450010000 05N280519000000000000000000000000000000000000000000000000000000000000000100000000000123SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000002\r\n701000000000001231234112345678101231235                        123123123123219060000       1230000000     160121906     21051900000000035530010000 05N280419000000000000000000000000000000000000000000000000000000000000000100000000000123SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000003\r\n701000000000001231234112345678101231235                        123123123123319060000       1230000000     160131906     21041900000000045680010000 05N280319000000000000000000000000000000000000000000000000000000000000000100000000000123SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000004\r\n701000000000001231234112345678101231235                        123123123123419060000       1230000000     160141906     21031900000000025380010000 05N280219000000000000000000000000000000000000000000000000000000000000000100000000000123SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000005\r\n701000000000001231234112345678101231235                        123123123123519060000       1230000000     160151906     21021900000000045680010000 05N280119000000000000000000000000000000000000000000000000000000000000000100000000000123SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000006\r\n701000000000001231234112345678101231235                        123123123123619060000       1230000000     160161906     21011800000000035530010000 05N281218000000000000000000000000000000000000000000000000000000000000000100000000000123SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000007\r\n9                                                                                                                                                                                                                                                                                                                                                                                                         000008\r\n', '', 0, '2000-01-01 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -243,7 +245,7 @@ CREATE TABLE IF NOT EXISTS `sacado` (
   `documento` varchar(20) NOT NULL,
   `avalista` varchar(20) NOT NULL,
   `avalista-documento` varchar(20) NOT NULL,
-  `email` varchar(50) NOT NULL,
+  `email` varchar(70) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
@@ -252,7 +254,7 @@ CREATE TABLE IF NOT EXISTS `sacado` (
 --
 
 INSERT INTO `sacado` (`id`, `nome`, `documento`, `avalista`, `avalista-documento`, `email`) VALUES
-(5, 'Sacado 1', '123', '123', '123', 'asdasd@adasd.com');
+(5, 'Sacado 1', '123', '123', '123', 'higorbelemdeoliveira@gmail.com');
 
 -- --------------------------------------------------------
 
