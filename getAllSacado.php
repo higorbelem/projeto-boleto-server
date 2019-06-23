@@ -3,7 +3,7 @@
 
 	$id = $_POST['id'];
 	
-	$sql1 = $dbcon -> query("SELECT sa.* FROM `cedente-tem-sacado` cesa, `sacado` sa WHERE cesa.`sacado-id` = sa.id AND cesa.`cedente-id` = '$id' ");
+	$sql1 = $dbcon -> query("SELECT sa.* FROM `cedente-tem-sacado` cesa, `sacado` sa WHERE cesa.`sacado-id` = sa.id AND cesa.`cedente-id` = '$id'");
 
 	if(mysqli_num_rows($sql1) > 0){
         //echo "ok";

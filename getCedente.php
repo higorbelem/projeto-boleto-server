@@ -4,7 +4,7 @@
    $cnpj = $_POST['cnpj'];
    $senha = $_POST['senha'];
 
-	$sql1 = $dbcon -> query("SELECT ce.`id` as 'id-cedente', ce.`nome` as 'nome-cedente', ce.`uso-banco`, ce.`use-santander`, ce.`uf`, ce.`cidade`, ce.`bairro`, ce.`rua`, ce.`numero`, ce.`cep`, ce.`cnpj`, ce.`informacoes`, ce.`contato`, ce.`valor-por-metro-cubico`, ce.`esgoto`, ce.`email`, co.`id` as 'id-conta', co.`banco`, co.`cip`, co.`conta`, co.`convenio`, co.`modalidade`, co.`agencia`  FROM `cedentes` ce INNER JOIN `contas` co ON co.`cedente-id` = ce.`id` AND ce.`cnpj` = $cnpj AND ce.`senha` = $senha ");
+	$sql1 = $dbcon -> query("SELECT ce.`id` as 'id-cedente', ce.`nome` as 'nome-cedente', ce.`uso-banco`, ce.`use-santander`, ce.`uf`, ce.`cidade`, ce.`bairro`, ce.`rua`, ce.`numero`, ce.`cep`, ce.`cnpj`, ce.`informacoes`, ce.`contato`, ce.`valor-por-metro-cubico`, ce.`esgoto`, ce.`email`, co.`id` as 'id-conta', co.`banco`, co.`cip`, co.`conta`, co.`convenio`, co.`modalidade`, co.`agencia`, co.`codigo-empresa` FROM `cedentes` ce INNER JOIN `contas` co ON co.`cedente-id` = ce.`id` AND ce.`cnpj` = '$cnpj' AND ce.`senha` = '$senha'");
 
 	if(mysqli_num_rows($sql1) > 0){
       $dados = $sql1->fetch_array();
@@ -107,6 +107,10 @@
       echo $dados['agencia'];
       echo "\",";
 
+      echo "\"codigoEmpresa\":\"";
+      echo $dados['codigo-empresa'];
+      echo "\",";
+
       echo "},";
 
 		while($dados = $sql1->fetch_array()){
@@ -138,6 +142,10 @@
 
          echo "\"agencia\":\"";
          echo $dados['agencia'];
+         echo "\",";
+
+         echo "\"codigoEmpresa\":\"";
+         echo $dados['codigo-empresa'];
          echo "\",";
 
 			echo "},";

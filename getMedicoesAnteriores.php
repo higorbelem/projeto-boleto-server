@@ -4,7 +4,7 @@
 	$casa_id = $_POST['casa-id'];
 	$data_medicao = $_POST['data-medicao'];
 
-	$sql1 = $dbcon -> query("SELECT * FROM medicoes WHERE `casa-id` = $casa_id AND `data-medicao` < '$data_medicao' ORDER BY `data-medicao` DESC");
+	$sql1 = $dbcon -> query("SELECT * FROM medicoes WHERE `casa-id` = $casa_id AND `data-medicao` < '$data_medicao'ORDER BY `data-medicao` DESC");
 
 	if(mysqli_num_rows($sql1) > 0){
         echo "[";
