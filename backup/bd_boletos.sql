@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: 02-Jul-2019 às 06:20
+-- Generation Time: 23-Jun-2019 às 00:44
 -- Versão do servidor: 5.7.26
 -- versão do PHP: 7.2.18
 
@@ -54,9 +54,10 @@ CREATE TABLE IF NOT EXISTS `casas` (
 
 INSERT INTO `casas` (`id`, `sacado-id`, `cedente-id`, `numero`, `rua`, `bairro`, `cidade`, `UF`, `referencia`, `num-hidrometro`, `dia-vencimento`, `cep`, `excluido`) VALUES
 (2, 5, 7, '123', 'rua de nada', 'bairro asdasasdas', 'cidade itabuna', 'BA', 'casa', '123', '21', '456123', 0),
-(3, 5, 7, '123', 'dsffsdfas', 'asdfasdfa', 'sdfadsf', 'sd', 'asdfasdfasfd', 'asdf', '15', '54646546', 0),
+(3, 5, 7, '123', 'dsffsdfas', 'asdfasdfa', 'sdfadsf', 'sd', 'asdfasdfasfd', 'asdf', '15', '54646546', 1),
 (5, 11, 7, '239', 'potamiano', 'são caetano', 'itabuna', 'ba', 'prox. paty', '123456', '05', '45607035', 0),
-(6, 11, 7, 'ad', 'asd', 'asd', 'asd', 'as', 'a', 'asd', '15', 'ads', 0);
+(6, 11, 7, 'ad', 'asd', 'asd', 'asd', 'as', 'a', 'asd', '15', 'ads', 1),
+(7, 11, 7, '', '', '', '', '', '', '', '', '', 0);
 
 -- --------------------------------------------------------
 
@@ -161,16 +162,16 @@ CREATE TABLE IF NOT EXISTS `medicoes` (
   `medidor-id` int(11) NOT NULL,
   `data-medicao` datetime NOT NULL,
   `medicao` int(11) NOT NULL,
-  `medicao-anterior` int(11) NOT NULL DEFAULT '0',
-  `boleto-gerado` tinyint(1) NOT NULL DEFAULT '0',
-  `data-boleto-gerado` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
-  `carteira-selecionada` varchar(5) NOT NULL DEFAULT '-1',
-  `conta-selecionada-index` int(11) NOT NULL DEFAULT '-1',
+  `medicao-anterior` int(11) NOT NULL,
+  `boleto-gerado` tinyint(1) NOT NULL,
+  `data-boleto-gerado` datetime NOT NULL,
+  `carteira-selecionada` varchar(5) NOT NULL,
+  `conta-selecionada-index` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `medidor-id` (`medidor-id`),
   KEY `casa-id` (`casa-id`),
   KEY `conta-selecionada-index` (`conta-selecionada-index`)
-) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `medicoes`
@@ -182,16 +183,7 @@ INSERT INTO `medicoes` (`id`, `casa-id`, `medidor-id`, `data-medicao`, `medicao`
 (3, 2, 1, '2019-03-28 07:00:00', 30, 21, 1, '2019-06-22 15:36:48', '16', 3),
 (4, 2, 1, '2019-02-28 07:00:00', 21, 16, 1, '2019-06-22 15:36:48', '16', 3),
 (5, 2, 1, '2019-01-28 07:00:00', 16, 7, 1, '2019-06-22 15:36:48', '16', 3),
-(6, 2, 1, '2018-12-28 07:00:00', 7, 0, 1, '2019-06-22 15:36:48', '16', 3),
-(22, 4, 1, '2019-06-27 01:56:18', 10, 5, 0, '2000-01-01 00:00:00', '-1', -1),
-(21, 4, 1, '2019-06-27 01:55:58', 5, 0, 0, '2000-01-01 00:00:00', '-1', -1),
-(20, 2, 1, '2019-06-27 01:53:53', 25, 20, 0, '2000-01-01 00:00:00', '-1', -1),
-(19, 6, 1, '2019-06-27 01:53:37', 15, 10, 0, '2000-01-01 00:00:00', '-1', -1),
-(18, 6, 1, '2019-06-27 01:52:17', 10, 0, 0, '2000-01-01 00:00:00', '-1', -1),
-(17, 2, 1, '2019-06-26 22:01:11', 20, 7, 0, '2000-01-01 00:00:00', '-1', -1),
-(24, 3, 1, '2019-07-01 20:59:26', 10, 0, 0, '2000-01-01 00:00:00', '-1', -1),
-(25, 3, 1, '2019-07-01 20:59:47', 10, 10, 0, '2000-01-01 00:00:00', '-1', -1),
-(26, 6, 1, '2019-07-01 21:18:07', 20, 15, 0, '2000-01-01 00:00:00', '-1', -1);
+(6, 2, 1, '2018-12-28 07:00:00', 7, 0, 1, '2019-06-22 15:36:48', '16', 3);
 
 -- --------------------------------------------------------
 
@@ -244,7 +236,7 @@ CREATE TABLE IF NOT EXISTS `medidor` (
 --
 
 INSERT INTO `medidor` (`id`, `cpf`, `cedente-id`, `nome`, `senha`) VALUES
-(1, '00000000001', 7, 'Medidor fulano', '123');
+(1, '123456789', 7, 'Medidor fulano', '123');
 
 -- --------------------------------------------------------
 
