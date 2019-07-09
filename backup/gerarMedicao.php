@@ -5,10 +5,6 @@
     $casa_id = $data['casa-id'];
     $medidor_id = $data['medidor-id'];
     $medicao = $data['medicao'];
-
-    /*$casa_id = $_GET['casa-id'];
-    $medidor_id = $_GET['medidor-id'];
-    $medicao = $_GET['medicao'];*/
     
     $sql1 = $dbcon -> query("SELECT `medicao` FROM `medicoes` WHERE `id` = (SELECT max(`id`) FROM `medicoes` WHERE `casa-id` = $casa_id)");
     

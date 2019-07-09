@@ -1,15 +1,7 @@
 <?php
 	include_once 'conexao.php';
-	include_once('auth.php');
-	
-	
 	
 	$data = json_decode(file_get_contents('php://input'), TRUE);
-	
-	$auth_usr = $data['auth-usr'];
-	$auth_psw = $data['auth-psw'];
-	auth($auth_usr,$auth_psw);
-	
     $medidor_id = $data['medidor-id'];
     //$medidor_id = $_GET['medidor-id'];
 
@@ -17,7 +9,7 @@
 
 	if(mysqli_num_rows($sql1) > 0){
 	    
-	    $jsonString = "ok;";
+	    $jsonString = "";
 	    
         $jsonString .= "[";
 

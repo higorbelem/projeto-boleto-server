@@ -1,5 +1,11 @@
 <?php
 	include_once 'conexao.php';
+	include_once('auth.php');
+	
+	$auth_usr = $_POST['auth-usr'];
+	$auth_psw = $_POST['auth-psw'];
+	
+	auth($auth_usr,$auth_psw);
 	
     $busca = $_POST['busca'];
     $buscarTodos = $_POST['buscar-todos'];
@@ -22,6 +28,8 @@
 	$sql1 = $dbcon -> query($query);
 
 	if(mysqli_num_rows($sql1) > 0){
+        echo "ok;";
+
         echo "[";
 
         while($dados = $sql1->fetch_array()){

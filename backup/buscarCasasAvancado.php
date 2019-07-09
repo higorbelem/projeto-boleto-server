@@ -10,7 +10,7 @@
     $uf = $data['uf'];
     $cep = $data['cep'];
     
-    $query = "SELECT ca.`id`, ca.`rua`, ca.`numero`, ca.`bairro`, ca.`cidade`, ca.`UF`, ca.`num-hidrometro`, ca.`cep`, sa.`nome` FROM `casas` ca INNER JOIN `sacado` sa ON ca.`sacado-id` = sa.`id` AND ca.`cedente-id` = $id_cedente AND (";
+    $query = "SELECT ca.`id`, ca.`rua`, ca.`numero`, ca.`bairro`, ca.`cidade`, ca.`UF`, ca.`num-hidrometro`, ca.`cep`, sa.`nome` FROM `casas` ca INNER JOIN `sacado` sa ON ca.`sacado-id` = sa.`id` AND ca.`cedente-id` = $id_cedente AND ca.`excluido` = 0 AND (";
     
     $first = true;
     

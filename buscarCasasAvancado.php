@@ -1,7 +1,14 @@
 <?php
     include_once 'conexao.php';
+    include_once('auth.php');
 
     $data = json_decode(file_get_contents('php://input'), TRUE);
+    
+    $auth_usr = $data['auth-usr'];
+	$auth_psw = $data['auth-psw'];
+	
+	auth($auth_usr,$auth_psw);
+    
     $id_cedente = $data['id-cedente'];
     $rua = $data['rua'];
     $numero = $data['numero'];
@@ -10,7 +17,7 @@
     $uf = $data['uf'];
     $cep = $data['cep'];
     
-    $query = "SELECT ca.`id`, ca.`rua`, ca.`numero`, ca.`bairro`, ca.`cidade`, ca.`UF`, ca.`num-hidrometro`, ca.`cep`, sa.`nome` FROM `casas` ca INNER JOIN `sacado` sa ON ca.`sacado-id` = sa.`id` AND ca.`cedente-id` = $id_cedente AND ca.`excluido` = 0 AND (";
+    $query = "SELECT ca.`id`, ca.`rua`, ca.`numero`, ca.`bairro`, ca.`cidade`, ca.`UF`, ca.`num-hidrometro`, ca.`cep`, sa.`nome` FROM `casas` ca INNER JOIN `sacado` sa ON ca.`sacado-id` = sa.`id` AND ca.`cedente-id` = $id_cedente AND (";
     
     $first = true;
     
@@ -67,6 +74,8 @@
 
 	if(mysqli_num_rows($sql1) > 0){
 	    $casas = $sql1->fetch_all();
+	    
+	    echo "ok;";
 	    
 	    echo "[";
 	    

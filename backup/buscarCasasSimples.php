@@ -5,7 +5,7 @@
     $id_cedente = $data['id-cedente'];
     $busca = $data['busca'];
     
-    $sql1 = $dbcon -> query("SELECT ca.`id`, ca.`rua`, ca.`numero`, ca.`bairro`, ca.`cidade`, ca.`UF`, ca.`num-hidrometro`, ca.`cep`, sa.`nome` FROM `casas` ca INNER JOIN `sacado` sa ON ca.`sacado-id` = sa.`id` AND ca.`cedente-id` = $id_cedente AND (ca.`rua` LIKE '%$busca%' OR ca.`numero` LIKE '%$busca%' OR ca.`bairro` LIKE '%$busca%' OR ca.`cidade` LIKE '%$busca%' OR ca.`UF` LIKE '%$busca%' OR ca.`cep` LIKE '%$busca%' OR sa.`nome` LIKE '%$busca%'  OR sa.`documento` LIKE '%$busca%')");
+    $sql1 = $dbcon -> query("SELECT ca.`id`, ca.`rua`, ca.`numero`, ca.`bairro`, ca.`cidade`, ca.`UF`, ca.`num-hidrometro`, ca.`cep`, sa.`nome` FROM `casas` ca INNER JOIN `sacado` sa ON ca.`sacado-id` = sa.`id` AND ca.`cedente-id` = $id_cedente AND ca.`excluido` = 0 AND (ca.`rua` LIKE '%$busca%' OR ca.`numero` LIKE '%$busca%' OR ca.`bairro` LIKE '%$busca%' OR ca.`cidade` LIKE '%$busca%' OR ca.`UF` LIKE '%$busca%' OR ca.`cep` LIKE '%$busca%' OR sa.`nome` LIKE '%$busca%'  OR sa.`documento` LIKE '%$busca%')");
 
 	if(mysqli_num_rows($sql1) > 0){
 	    $casas = $sql1->fetch_all();

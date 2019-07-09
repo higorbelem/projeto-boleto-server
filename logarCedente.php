@@ -1,5 +1,11 @@
 <?php
     include_once 'conexao.php';
+    include_once('auth.php');
+	
+	$auth_usr = $_POST['auth-usr'];
+	$auth_psw = $_POST['auth-psw'];
+	
+	auth($auth_usr,$auth_psw);
     
     $cnpj = $_POST['cnpj'];
     $senha = $_POST['senha'];

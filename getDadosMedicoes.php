@@ -1,5 +1,11 @@
 <?php
 	include_once 'conexao.php';
+	include_once('auth.php');
+	
+	$auth_usr = $_POST['auth-usr'];
+	$auth_psw = $_POST['auth-psw'];
+	
+	auth($auth_usr,$auth_psw);
 	
    $cedente_id = $_POST['cedente-id'];
    $is_boleto = $_POST['is-boleto'];
@@ -9,135 +15,137 @@
 	$sql1 = $dbcon -> query("SELECT me.`id` as 'id-medicoes', me.`data-medicao`, me.`boleto-gerado`, me.`data-boleto-gerado`, me.`medicao`, me.`medicao-anterior`, me.`carteira-selecionada`, me.`conta-selecionada-index`, medidor.`id` as 'id-medidor', medidor.`nome` as 'nome-medidor', medidor.`cpf`, sa.`id` as 'id-sacado', sa.`nome` as 'nome-sacado', sa.`email`, sa.`documento`, sa.`avalista`, sa.`avalista-documento`, ca.`id` as 'id-casa', ca.`bairro`, ca.`cidade`, ca.`dia-vencimento`, ca.`cidade`, ca.`referencia`, ca.`num-hidrometro`, ca.`numero`, ca.`rua`, ca.`UF`, ca.`cep` FROM `medicoes` me INNER JOIN `medidor` ON me.`medidor-id` = medidor.`id` AND me.`boleto-gerado` = $is_boleto AND 0 = (SELECT COUNT(*) FROM `medicoes-remessa` WHERE `medicoes-remessa`.`medicoes-id` = me.`id`) INNER JOIN `casas` ca ON me.`casa-id` = ca.`id` AND ca.`cedente-id` = $cedente_id AND ca.`excluido` = 0 INNER JOIN `sacado` sa ON ca.`sacado-id` = sa.`id` ");
 
 	if(mysqli_num_rows($sql1) > 0){
-        echo "[";
+      echo "ok;";
 
-        while($dados = $sql1->fetch_array()){
-            echo "{";
+      echo "[";
 
-            echo "\"id\":\"";
-            echo $dados['id-medicoes'];
-            echo "\",";
-            
-            echo "\"dataMedicao\":\"";
-            echo $dados['data-medicao'];
-            echo "\",";
-            
-            echo "\"boletoGerado\":\"";
-            echo $dados['boleto-gerado'];
-            echo "\",";
-            
-            echo "\"medicao\":\"";
-            echo $dados['medicao'];
-            echo "\",";
+      while($dados = $sql1->fetch_array()){
+         echo "{";
 
-            echo "\"medicaoAnterior\":\"";
-            echo $dados['medicao-anterior'];
-            echo "\",";
+         echo "\"id\":\"";
+         echo $dados['id-medicoes'];
+         echo "\",";
+         
+         echo "\"dataMedicao\":\"";
+         echo $dados['data-medicao'];
+         echo "\",";
+         
+         echo "\"boletoGerado\":\"";
+         echo $dados['boleto-gerado'];
+         echo "\",";
+         
+         echo "\"medicao\":\"";
+         echo $dados['medicao'];
+         echo "\",";
 
-            echo "\"dataBoletoGerado\":\"";
-            echo $dados['data-boleto-gerado'];
-            echo "\",";
+         echo "\"medicaoAnterior\":\"";
+         echo $dados['medicao-anterior'];
+         echo "\",";
 
-            echo "\"carteiraSelecionada\":\"";
-            echo $dados['carteira-selecionada'];
-            echo "\",";
+         echo "\"dataBoletoGerado\":\"";
+         echo $dados['data-boleto-gerado'];
+         echo "\",";
 
-            echo "\"contaSelecionadaIndex\":\"";
-            echo $dados['conta-selecionada-index'];
-            echo "\",";
+         echo "\"carteiraSelecionada\":\"";
+         echo $dados['carteira-selecionada'];
+         echo "\",";
 
-            echo "\"medidor\":{"; // abrindo medidor
-            
-            echo "\"id\":\"";
-            echo $dados['id-medidor'];
-            echo "\",";
-            
-            echo "\"nome\":\"";
-            echo $dados['nome-medidor'];
-            echo "\",";
+         echo "\"contaSelecionadaIndex\":\"";
+         echo $dados['conta-selecionada-index'];
+         echo "\",";
 
-            echo "\"cpf\":\"";
-            echo $dados['cpf'];
-            echo "\",";
+         echo "\"medidor\":{"; // abrindo medidor
+         
+         echo "\"id\":\"";
+         echo $dados['id-medidor'];
+         echo "\",";
+         
+         echo "\"nome\":\"";
+         echo $dados['nome-medidor'];
+         echo "\",";
 
-            echo "},"; //fechando medidor
+         echo "\"cpf\":\"";
+         echo $dados['cpf'];
+         echo "\",";
 
-            echo "\"sacado\":{"; // abrindo sacado
-            
-            echo "\"id\":\"";
-            echo $dados['id-sacado'];
-            echo "\",";
+         echo "},"; //fechando medidor
 
-            echo "\"nome\":\"";
-            echo $dados['nome-sacado'];
-            echo "\",";
+         echo "\"sacado\":{"; // abrindo sacado
+         
+         echo "\"id\":\"";
+         echo $dados['id-sacado'];
+         echo "\",";
 
-            echo "\"email\":\"";
-            echo $dados['email'];
-            echo "\",";
+         echo "\"nome\":\"";
+         echo $dados['nome-sacado'];
+         echo "\",";
 
-            echo "\"documento\":\"";
-            echo $dados['documento'];
-            echo "\",";
+         echo "\"email\":\"";
+         echo $dados['email'];
+         echo "\",";
 
-            echo "\"avalista\":\"";
-            echo $dados['avalista'];
-            echo "\",";
+         echo "\"documento\":\"";
+         echo $dados['documento'];
+         echo "\",";
 
-            echo "\"avalistaDocumento\":\"";
-            echo $dados['avalista-documento'];
-            echo "\",";
+         echo "\"avalista\":\"";
+         echo $dados['avalista'];
+         echo "\",";
 
-            echo "},"; //fechando sacado
+         echo "\"avalistaDocumento\":\"";
+         echo $dados['avalista-documento'];
+         echo "\",";
 
-            echo "\"casa\":{"; // abrindo casa
-            
-            echo "\"id\":\"";
-            echo $dados['id-casa'];
-            echo "\",";
+         echo "},"; //fechando sacado
 
-            echo "\"bairro\":\"";
-            echo $dados['bairro'];
-            echo "\",";
+         echo "\"casa\":{"; // abrindo casa
+         
+         echo "\"id\":\"";
+         echo $dados['id-casa'];
+         echo "\",";
 
-            echo "\"cidade\":\"";
-            echo $dados['cidade'];
-            echo "\",";
+         echo "\"bairro\":\"";
+         echo $dados['bairro'];
+         echo "\",";
 
-            echo "\"diaVencimento\":\"";
-            echo $dados['dia-vencimento'];
-            echo "\",";
+         echo "\"cidade\":\"";
+         echo $dados['cidade'];
+         echo "\",";
 
-            echo "\"numHidrometro\":\"";
-            echo $dados['num-hidrometro'];
-            echo "\",";
+         echo "\"diaVencimento\":\"";
+         echo $dados['dia-vencimento'];
+         echo "\",";
 
-            echo "\"numero\":\"";
-            echo $dados['numero'];
-            echo "\",";
+         echo "\"numHidrometro\":\"";
+         echo $dados['num-hidrometro'];
+         echo "\",";
 
-            echo "\"rua\":\"";
-            echo $dados['rua'];
-            echo "\",";
+         echo "\"numero\":\"";
+         echo $dados['numero'];
+         echo "\",";
 
-            echo "\"uf\":\"";
-            echo $dados['UF'];
-            echo "\",";
+         echo "\"rua\":\"";
+         echo $dados['rua'];
+         echo "\",";
 
-            echo "\"cep\":\"";
-            echo $dados['cep'];
-            echo "\",";
+         echo "\"uf\":\"";
+         echo $dados['UF'];
+         echo "\",";
 
-            echo "\"referencia\":\"";
-            echo $dados['referencia'];
-            echo "\"";
+         echo "\"cep\":\"";
+         echo $dados['cep'];
+         echo "\",";
 
-            echo "}"; //fechando casa
+         echo "\"referencia\":\"";
+         echo $dados['referencia'];
+         echo "\"";
 
-            echo "},"; //fechando obj total
-        }
+         echo "}"; //fechando casa
 
-        echo "]";
+         echo "},"; //fechando obj total
+      }
+
+      echo "]";
 	}else{
 		echo "erro";
    }

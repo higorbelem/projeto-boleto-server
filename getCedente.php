@@ -1,5 +1,11 @@
 <?php
 	include_once 'conexao.php';
+	include_once ('auth.php');
+	
+	$auth_usr = $_POST['auth-usr'];
+	$auth_psw = $_POST['auth-psw'];
+	
+	auth($auth_usr,$auth_psw);
 	
    $cnpj = $_POST['cnpj'];
    $senha = $_POST['senha'];
@@ -8,6 +14,8 @@
 
 	if(mysqli_num_rows($sql1) > 0){
       $dados = $sql1->fetch_array();
+
+      echo "ok;";
 
 		echo "{";
 
