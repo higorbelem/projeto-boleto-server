@@ -93,6 +93,10 @@
                     echo $dados2['num-hidrometro'];
                     echo "\",";
 
+                    echo "\"maxHidrometro\":\"";
+                    echo $dados2['valor-maximo-hidrometro'];
+                    echo "\",";
+
                     echo "\"numero\":\"";
                     echo $dados2['numero'];
                     echo "\",";

@@ -12,8 +12,7 @@
     $medidor_id = $data['medidor-id'];
     $medicao = $data['medicao'];
 
-    $sql1 = $dbcon -> query("
-    DROP PROCEDURE IF EXISTS transac;
+    /*DROP PROCEDURE IF EXISTS transac;
 
     DELIMITER //
     
@@ -38,8 +37,9 @@
           END IF;
     END//
     
-    DELIMITER ;
+    DELIMITER ;*/
     
+    $sql1 = $dbcon -> query("
     CALL transac($casa_id,$medidor_id,$medicao);
     ");
 

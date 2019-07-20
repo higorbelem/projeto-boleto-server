@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: 02-Jul-2019 às 06:20
+-- Generation Time: 20-Jul-2019 às 21:51
 -- Versão do servidor: 5.7.26
 -- versão do PHP: 7.2.18
 
@@ -21,6 +21,104 @@ SET time_zone = "+00:00";
 --
 -- Database: `bd_boletos`
 --
+
+DELIMITER $$
+--
+-- Procedures
+--
+DROP PROCEDURE IF EXISTS `editar-sacado`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `editar-sacado` (`dialogMode` INTEGER, `idSacado` INTEGER, `idCedente` INTEGER, `nome` VARCHAR(50), `documento` VARCHAR(20), `email` VARCHAR(70), `queryAddCasas` TEXT, `queryEditCasas` TEXT)  exit_proc:BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION, SQLWARNING
+ 	BEGIN
+    		ROLLBACK;
+    		RESIGNAL;
+  	END;
+
+        SET autocommit=0;
+	START TRANSACTION;
+
+        IF (dialogMode = 0) THEN
+            INSERT INTO `sacado` (`nome`,`documento`,`avalista`,`avalista-documento`,`email`) VALUES (nome,documento,'0','0',email);
+            
+	    SET @idSacadoTemp = (SELECT LAST_INSERT_ID());
+            INSERT INTO `cedentes-sacado` (`id-cedente`, `id-sacado`) VALUES (idCedente,@idSacadoTemp);
+        ELSE 
+            IF (dialogMode = 1) THEN
+                UPDATE `sacado` SET `nome` = nome,`documento` = documento,`email` = email WHERE `id` = idSacado;
+                SET @idSacadoTemp = idSacado;
+            ELSE   
+                SELECT "erro" as 'return-value';
+                ROLLBACK;
+		LEAVE exit_proc;
+            END IF;
+        END IF; 
+
+        IF (queryAddCasas IS NOT NULL) THEN
+            SET @query_as_string = (SELECT REPLACE(queryAddCasas,'id_sacado_temp_subst',@idSacadoTemp));
+            PREPARE statement_1 FROM @query_as_string;
+            EXECUTE statement_1;
+            DEALLOCATE PREPARE statement_1;
+        END IF;
+
+        IF (queryEditCasas IS NOT NULL) THEN
+            SET @query_as_string = (SELECT REPLACE(queryEditCasas,'id_sacado_temp_subst',@idSacadoTemp));
+            PREPARE statement_1 FROM @query_as_string;
+            EXECUTE statement_1;
+            DEALLOCATE PREPARE statement_1;
+        END IF;
+
+        SELECT "ok" as 'return-value';
+        COMMIT;
+    END$$
+
+DROP PROCEDURE IF EXISTS `teste`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `teste` (`teste` VARCHAR(10240))  BEGIN
+        DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
+        START TRANSACTION;
+		
+        SET @query_as_string = teste;
+        PREPARE statement_1 FROM @query_as_string;
+        EXECUTE statement_1;
+        DEALLOCATE PREPARE statement_1;
+        
+    END$$
+
+DROP PROCEDURE IF EXISTS `transac`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `transac` (`idCasaParam` INTEGER, `idMedidorParam` INTEGER, `medicaoParam` INTEGER)  BEGIN
+          DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
+          START TRANSACTION;
+    
+        SET @medicao = (SELECT `medicao` FROM `medicoes` WHERE `id` = (SELECT max(`id`) FROM `medicoes` WHERE `casa-id` = idCasaParam));
+    
+          IF (medicaoParam < @medicao) THEN
+            SELECT "menor" as 'return-value';
+            ROLLBACK;
+          ELSE
+            IF (@medicao IS NULL) THEN
+                INSERT INTO `medicoes`(`casa-id`, `medidor-id`, `data-medicao`, `medicao`) VALUES (idCasaParam, idMedidorParam, CONVERT_TZ(NOW(),'-03:00',@@global.time_zone), medicaoParam);
+            ELSE
+                INSERT INTO `medicoes`(`casa-id`, `medidor-id`, `data-medicao`, `medicao`, `medicao-anterior`) VALUES (idCasaParam, idMedidorParam, CONVERT_TZ(NOW(),'-03:00',@@global.time_zone), medicaoParam, @medicao);
+            END IF;
+            SELECT "ok" as 'return-value';
+            COMMIT;
+          END IF;
+    END$$
+
+DROP PROCEDURE IF EXISTS `usp_test_transaction`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `usp_test_transaction` ()  BEGIN
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
+  START TRANSACTION;
+
+  -- whatever DML operations and SELECT statements you want to perform go here
+
+  IF (1=1) THEN
+    COMMIT;
+  ELSE
+    ROLLBACK;
+  END IF;
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -40,23 +138,26 @@ CREATE TABLE IF NOT EXISTS `casas` (
   `UF` varchar(2) NOT NULL,
   `referencia` varchar(50) NOT NULL,
   `num-hidrometro` varchar(30) NOT NULL,
+  `valor-maximo-hidrometro` int(11) NOT NULL,
   `dia-vencimento` varchar(2) NOT NULL,
   `cep` varchar(15) NOT NULL,
   `excluido` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `sacado-id` (`sacado-id`),
   KEY `cedente-id` (`cedente-id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `casas`
 --
 
-INSERT INTO `casas` (`id`, `sacado-id`, `cedente-id`, `numero`, `rua`, `bairro`, `cidade`, `UF`, `referencia`, `num-hidrometro`, `dia-vencimento`, `cep`, `excluido`) VALUES
-(2, 5, 7, '123', 'rua de nada', 'bairro asdasasdas', 'cidade itabuna', 'BA', 'casa', '123', '21', '456123', 0),
-(3, 5, 7, '123', 'dsffsdfas', 'asdfasdfa', 'sdfadsf', 'sd', 'asdfasdfasfd', 'asdf', '15', '54646546', 0),
-(5, 11, 7, '239', 'potamiano', 'são caetano', 'itabuna', 'ba', 'prox. paty', '123456', '05', '45607035', 0),
-(6, 11, 7, 'ad', 'asd', 'asd', 'asd', 'as', 'a', 'asd', '15', 'ads', 0);
+INSERT INTO `casas` (`id`, `sacado-id`, `cedente-id`, `numero`, `rua`, `bairro`, `cidade`, `UF`, `referencia`, `num-hidrometro`, `valor-maximo-hidrometro`, `dia-vencimento`, `cep`, `excluido`) VALUES
+(2, 5, 7, '123', 'rua de nada', 'bairro asdasasdas', 'cidade itabuna', 'BA', 'casa', '123', 5000, '21', '45612322', 0),
+(3, 5, 7, '123', 'dsffsdfas', 'asdfasdfa', 'sdfadsf', 'sd', 'asdfasdfasfd', 'asdf', 5000, '15', '54646546', 0),
+(5, 11, 7, '239', 'potamiano', 'são caetano', 'itabuna', 'ba', 'prox. paty', '123456', 5000, '05', '45607035', 0),
+(6, 11, 7, 'ad', 'asd', 'asd', 'asd', 'as', 'a', 'asd', 5000, '15', '12345678', 0),
+(60, 62, 7, '123', 'rua afsdiasd', 'bairrp asdasd ', 'qwe', 'qw', 'qwe', '123', 123123, '12', '123123', 0),
+(61, 62, 7, '123', 'qwe', 'qwe', 'qwe', 'qw', 'qwe', '13', 123123, '23', '123', 0);
 
 -- --------------------------------------------------------
 
@@ -84,7 +185,7 @@ CREATE TABLE IF NOT EXISTS `cedentes` (
   `esgoto` float NOT NULL,
   `email` varchar(70) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `cedentes`
@@ -107,7 +208,7 @@ CREATE TABLE IF NOT EXISTS `cedentes-sacado` (
   PRIMARY KEY (`id`),
   KEY `id-sacado` (`id-sacado`),
   KEY `id-cedente` (`id-cedente`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `cedentes-sacado`
@@ -115,7 +216,8 @@ CREATE TABLE IF NOT EXISTS `cedentes-sacado` (
 
 INSERT INTO `cedentes-sacado` (`id`, `id-cedente`, `id-sacado`) VALUES
 (1, 7, 5),
-(2, 7, 11);
+(2, 7, 11),
+(42, 7, 62);
 
 -- --------------------------------------------------------
 
@@ -136,7 +238,7 @@ CREATE TABLE IF NOT EXISTS `contas` (
   `codigo-empresa` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `cedente-id` (`cedente-id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `contas`
@@ -170,28 +272,18 @@ CREATE TABLE IF NOT EXISTS `medicoes` (
   KEY `medidor-id` (`medidor-id`),
   KEY `casa-id` (`casa-id`),
   KEY `conta-selecionada-index` (`conta-selecionada-index`)
-) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `medicoes`
 --
 
 INSERT INTO `medicoes` (`id`, `casa-id`, `medidor-id`, `data-medicao`, `medicao`, `medicao-anterior`, `boleto-gerado`, `data-boleto-gerado`, `carteira-selecionada`, `conta-selecionada-index`) VALUES
-(1, 2, 1, '2019-05-28 07:00:00', 43, 37, 1, '2019-06-22 15:36:48', '16', 3),
-(2, 2, 1, '2019-04-28 07:00:00', 37, 30, 1, '2019-06-22 15:36:48', '16', 3),
-(3, 2, 1, '2019-03-28 07:00:00', 30, 21, 1, '2019-06-22 15:36:48', '16', 3),
-(4, 2, 1, '2019-02-28 07:00:00', 21, 16, 1, '2019-06-22 15:36:48', '16', 3),
-(5, 2, 1, '2019-01-28 07:00:00', 16, 7, 1, '2019-06-22 15:36:48', '16', 3),
-(6, 2, 1, '2018-12-28 07:00:00', 7, 0, 1, '2019-06-22 15:36:48', '16', 3),
-(22, 4, 1, '2019-06-27 01:56:18', 10, 5, 0, '2000-01-01 00:00:00', '-1', -1),
-(21, 4, 1, '2019-06-27 01:55:58', 5, 0, 0, '2000-01-01 00:00:00', '-1', -1),
-(20, 2, 1, '2019-06-27 01:53:53', 25, 20, 0, '2000-01-01 00:00:00', '-1', -1),
-(19, 6, 1, '2019-06-27 01:53:37', 15, 10, 0, '2000-01-01 00:00:00', '-1', -1),
-(18, 6, 1, '2019-06-27 01:52:17', 10, 0, 0, '2000-01-01 00:00:00', '-1', -1),
-(17, 2, 1, '2019-06-26 22:01:11', 20, 7, 0, '2000-01-01 00:00:00', '-1', -1),
-(24, 3, 1, '2019-07-01 20:59:26', 10, 0, 0, '2000-01-01 00:00:00', '-1', -1),
-(25, 3, 1, '2019-07-01 20:59:47', 10, 10, 0, '2000-01-01 00:00:00', '-1', -1),
-(26, 6, 1, '2019-07-01 21:18:07', 20, 15, 0, '2000-01-01 00:00:00', '-1', -1);
+(51, 2, 1, '2019-07-09 20:18:54', 20, 0, 1, '2019-07-20 16:40:08', '16', 3),
+(52, 2, 1, '2019-07-12 11:16:24', 20, 20, 1, '2019-07-20 16:40:08', '16', 3),
+(53, 2, 1, '2019-07-17 20:51:08', 20, 20, 1, '2019-07-20 16:40:08', '16', 3),
+(54, 3, 1, '2019-07-17 20:51:27', 35, 0, 1, '2019-07-20 16:40:08', '16', 3),
+(55, 60, 1, '2019-07-20 16:24:20', 10, 0, 1, '2019-07-20 16:40:08', '16', 3);
 
 -- --------------------------------------------------------
 
@@ -207,19 +299,18 @@ CREATE TABLE IF NOT EXISTS `medicoes-remessa` (
   PRIMARY KEY (`id`),
   KEY `medicoes-id` (`medicoes-id`),
   KEY `remessa-id` (`remessa-id`)
-) ENGINE=MyISAM AUTO_INCREMENT=178 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=197 DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `medicoes-remessa`
 --
 
 INSERT INTO `medicoes-remessa` (`id`, `medicoes-id`, `remessa-id`) VALUES
-(177, 6, 100),
-(176, 5, 100),
-(175, 4, 100),
-(174, 3, 100),
-(173, 2, 100),
-(172, 1, 100);
+(192, 51, 104),
+(193, 52, 104),
+(194, 53, 104),
+(195, 54, 104),
+(196, 55, 104);
 
 -- --------------------------------------------------------
 
@@ -237,7 +328,7 @@ CREATE TABLE IF NOT EXISTS `medidor` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `cpf` (`cpf`),
   KEY `cedente-id` (`cedente-id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `medidor`
@@ -261,14 +352,14 @@ CREATE TABLE IF NOT EXISTS `remessa` (
   `enviado` tinyint(1) NOT NULL,
   `data-envio` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=101 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `remessa`
 --
 
 INSERT INTO `remessa` (`id`, `data`, `arquivo-remessa`, `arquivo-retorno`, `enviado`, `data-envio`) VALUES
-(100, '2019-06-22 15:36:54', '01REMESSA01COBRANCA       12341123456781000000CEDENTE 1                     001BANCODOBRASIL  1906220000055                      1231231                                                                                                                                                                                                                                                                  000001\r\n702000000000000011234112345678112312315                        123123100000119060000       1230000000     160111906     21061900000000030450010000 05N280519000100000000000000000000000000000000000000000000000000000000000100007168074598SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000002\r\n702000000000000011234112345678112312315                        123123100000219060000       1230000000     160121906     21051900000000035530010000 05N280419000100000000000000000000000000000000000000000000000000000000000100007168074598SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000003\r\n702000000000000011234112345678112312315                        123123100000319060000       1230000000     160131906     21041900000000045680010000 05N280319000100000000000000000000000000000000000000000000000000000000000100007168074598SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000004\r\n702000000000000011234112345678112312315                        123123100000419060000       1230000000     160141906     21031900000000025380010000 05N280219000100000000000000000000000000000000000000000000000000000000000100007168074598SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000005\r\n702000000000000011234112345678112312315                        123123100000519060000       1230000000     160151906     21021900000000045680010000 05N280119000100000000000000000000000000000000000000000000000000000000000100007168074598SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000006\r\n702000000000000011234112345678112312315                        123123100000619060000       1230000000     160161906     21011800000000035530010000 05N281218000100000000000000000000000000000000000000000000000000000000000100007168074598SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS00456123CIDADE ITABUNA                                              000007\r\n9                                                                                                                                                                                                                                                                                                                                                                                                         000008\r\n', '', 0, '2000-01-01 00:00:00');
+(104, '2019-07-20 16:40:25', '01REMESSA01COBRANCA       12341123456781000000CEDENTE 1                     001BANCODOBRASIL  1907200000055                      1231231                                                                                                                                                                                                                                                                  000001\r\n702000000000000011234112345678112312315                        123123100005119070000       1230000000     1601511907    21071900000000101500010000 05N090719000100000000000000000000000000000000000000000000000000000000000100007168074598SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS45612322CIDADE ITABUNA                                              000002\r\n702000000000000011234112345678112312315                        123123100005219070000       1230000000     1601521907    21071900000000000000010000 05N120719000100000000000000000000000000000000000000000000000000000000000100007168074598SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS45612322CIDADE ITABUNA                                              000003\r\n702000000000000011234112345678112312315                        123123100005319070000       1230000000     1601531907    21071900000000000000010000 05N170719000100000000000000000000000000000000000000000000000000000000000100007168074598SACADO 1                                RUA DE NADA, 123                        BAIRRO ASDAS45612322CIDADE ITABUNA                                              000004\r\n702000000000000011234112345678112312315                        123123100005419070000       1230000000     1601541907    15081900000000177630010000 05N170719000100000000000000000000000000000000000000000000000000000000000100007168074598SACADO 1                                DSFFSDFAS, 123                          ASDFASDFA   54646546SDFADSF                                                     000005\r\n7020000000000000112341123456781123123162                       123123100005519070000       1230000000     1601551907    12081900000000050750010000 05N200719000100000000000000000000000000000000000000000000000000000000000100000012312312FULANIN EDITO                           RUA AFSDIASD, 123                       BAIRRP ASDAS00123123QWE                                                         000006\r\n9                                                                                                                                                                                                                                                                                                                                                                                                         000007\r\n', '', 0, '2000-01-01 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -285,7 +376,7 @@ CREATE TABLE IF NOT EXISTS `sacado` (
   `avalista-documento` varchar(20) NOT NULL,
   `email` varchar(70) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `sacado`
@@ -293,7 +384,8 @@ CREATE TABLE IF NOT EXISTS `sacado` (
 
 INSERT INTO `sacado` (`id`, `nome`, `documento`, `avalista`, `avalista-documento`, `email`) VALUES
 (5, 'Sacado 1', '07168074598', '123', '123', 'higorbelemdeoliveira@gmail.com'),
-(11, 'higor belem', '07168074598', 'asdasd', 'adad', 'higorbelemdeoliveira@hotmail.com');
+(11, 'higor belem', '07168074598', 'asdasd', 'adad', 'higorbelemdeoliveira@hotmail.com'),
+(62, 'fulanin edito', '12312312', '0', '0', 'fuanin@nada');
 
 -- --------------------------------------------------------
 
@@ -310,7 +402,7 @@ CREATE TABLE IF NOT EXISTS `visualizadores` (
   `senha` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `cedente-id` (`cedente-id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
