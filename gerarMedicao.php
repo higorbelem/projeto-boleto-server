@@ -18,23 +18,23 @@
     
     CREATE PROCEDURE transac(idCasaParam INTEGER, idMedidorParam INTEGER, medicaoParam INTEGER)
     BEGIN
-          DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
-          START TRANSACTION;
+        DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
+        START TRANSACTION;
     
         SET @medicao = (SELECT `medicao` FROM `medicoes` WHERE `id` = (SELECT max(`id`) FROM `medicoes` WHERE `casa-id` = idCasaParam));
     
-          IF (medicaoParam < @medicao) THEN
+        IF (medicaoParam < @medicao) THEN
             SELECT "menor" as 'return-value';
             ROLLBACK;
-          ELSE
+        ELSE
             IF (@medicao IS NULL) THEN
-                INSERT INTO `medicoes`(`casa-id`, `medidor-id`, `data-medicao`, `medicao`) VALUES (idCasaParam, idMedidorParam, CONVERT_TZ(NOW(),'-03:00',@@global.time_zone), medicaoParam);
+                INSERT INTO `medicoes`(`casa-id`, `medidor-id`, `data-medicao`,`data-referencia`, `medicao`) VALUES (idCasaParam, idMedidorParam, CONVERT_TZ(NOW(),'-03:00',@@global.time_zone), DATE_SUB(CONVERT_TZ(CURDATE(),'-03:00',@@global.time_zone),INTERVAL 1 MONTH), medicaoParam);
             ELSE
-                INSERT INTO `medicoes`(`casa-id`, `medidor-id`, `data-medicao`, `medicao`, `medicao-anterior`) VALUES (idCasaParam, idMedidorParam, CONVERT_TZ(NOW(),'-03:00',@@global.time_zone), medicaoParam, @medicao);
+                INSERT INTO `medicoes`(`casa-id`, `medidor-id`, `data-medicao`,`data-referencia`, `medicao`, `medicao-anterior`) VALUES (idCasaParam, idMedidorParam, CONVERT_TZ(NOW(),'-03:00',@@global.time_zone), DATE_SUB(CONVERT_TZ(CURDATE(),'-03:00',@@global.time_zone),INTERVAL 1 MONTH), medicaoParam, @medicao);
             END IF;
             SELECT "ok" as 'return-value';
             COMMIT;
-          END IF;
+        END IF;
     END//
     
     DELIMITER ;*/

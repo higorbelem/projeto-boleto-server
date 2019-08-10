@@ -12,7 +12,7 @@
 
    $query_medicoes_mes = "SELECT SUM(me.`medicao`) FROM `medicoes` me INNER JOIN `casas` ca ON me.`casa-id` = ca.`id` AND ca.`cedente-id` = $cedente_id AND MONTH(me.`data-medicao`) = MONTH(NOW()) AND ca.`excluido` = 0";
 
-	$sql1 = $dbcon -> query("SELECT me.`id` as 'id-medicoes', me.`data-medicao`, me.`boleto-gerado`, me.`data-boleto-gerado`, me.`medicao`, me.`medicao-anterior`, me.`carteira-selecionada`, me.`conta-selecionada-index`, medidor.`id` as 'id-medidor', medidor.`nome` as 'nome-medidor', medidor.`cpf`, sa.`id` as 'id-sacado', sa.`nome` as 'nome-sacado', sa.`email`, sa.`documento`, sa.`avalista`, sa.`avalista-documento`, ca.`id` as 'id-casa', ca.`bairro`, ca.`cidade`, ca.`dia-vencimento`, ca.`cidade`, ca.`referencia`, ca.`num-hidrometro`, ca.`valor-maximo-hidrometro`, ca.`numero`, ca.`rua`, ca.`UF`, ca.`cep` FROM `medicoes` me INNER JOIN `medidor` ON me.`medidor-id` = medidor.`id` AND me.`boleto-gerado` = $is_boleto AND 0 = (SELECT COUNT(*) FROM `medicoes-remessa` WHERE `medicoes-remessa`.`medicoes-id` = me.`id`) INNER JOIN `casas` ca ON me.`casa-id` = ca.`id` AND ca.`cedente-id` = $cedente_id AND ca.`excluido` = 0 INNER JOIN `sacado` sa ON ca.`sacado-id` = sa.`id` ");
+	$sql1 = $dbcon -> query("SELECT me.`id` as 'id-medicoes', me.`data-medicao`, me.`boleto-gerado`, me.`data-boleto-gerado`, me.`medicao`, me.`medicao-anterior`, me.`data-referencia`,me.`carteira-selecionada`, me.`conta-selecionada-index`, medidor.`id` as 'id-medidor', medidor.`nome` as 'nome-medidor', medidor.`cpf`, sa.`id` as 'id-sacado', sa.`nome` as 'nome-sacado', sa.`email`, sa.`documento`, sa.`avalista`, sa.`avalista-documento`, ca.`id` as 'id-casa', ca.`bairro`, ca.`cidade`, ca.`dia-vencimento`, ca.`cidade`, ca.`referencia`, ca.`num-hidrometro`, ca.`valor-maximo-hidrometro`, ca.`numero`, ca.`rua`, ca.`UF`, ca.`cep` FROM `medicoes` me INNER JOIN `medidor` ON me.`medidor-id` = medidor.`id` AND me.`boleto-gerado` = $is_boleto AND 0 = (SELECT COUNT(*) FROM `medicoes-remessa` WHERE `medicoes-remessa`.`medicoes-id` = me.`id`) INNER JOIN `casas` ca ON me.`casa-id` = ca.`id` AND ca.`cedente-id` = $cedente_id AND ca.`excluido` = 0 INNER JOIN `sacado` sa ON ca.`sacado-id` = sa.`id` ");
 
 	if(mysqli_num_rows($sql1) > 0){
       echo "ok;";
@@ -40,6 +40,10 @@
 
          echo "\"medicaoAnterior\":\"";
          echo $dados['medicao-anterior'];
+         echo "\",";
+
+         echo "\"dataReferencia\":\"";
+         echo $dados['data-referencia'];
          echo "\",";
 
          echo "\"dataBoletoGerado\":\"";
